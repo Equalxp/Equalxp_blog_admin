@@ -6,104 +6,58 @@ const updateTime = dayjs(new Date()).format("YYYY-MM-DD");
 
 const tableData = [
   {
-    id: 1,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 1,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+    id: "1",
+    articleTitle: "第一篇文章",
+    articleCategory: ["001"],
+    articleTag: ["001", "002", "003"],
+    articleContent: "哈哈哈",
+    articleCover: [
+      {
+        name: "hamburger.png",
+        url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+      }
+    ],
+    isTop: 1, // 置顶 1 置顶 0 不置顶
+    isPublic: 1, // 状态 1 公开 0 私密
+    type: 1, // 类型 1 原创 2 翻译 3 转载
+    createTime: createTime,
+    updateTime: updateTime
   },
   {
-    id: 2,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+    id: "2",
+    articleTitle: "第二篇文章",
+    articleCategory: ["001"],
+    articleTag: ["001", "002", "003"],
+    articleContent: "哈哈哈",
+    articleCover: [
+      {
+        name: "hamburger.png",
+        url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+      }
+    ],
+    isTop: 1, // 置顶 1 置顶 0 不置顶
+    isPublic: 1, // 状态 1 公开 0 私密
+    type: 1, // 类型 1 原创 2 翻译 3 转载
+    createTime: createTime,
+    updateTime: updateTime
   },
   {
-    id: 3,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-  },
-  {
-    id: 4,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-  },
-  {
-    id: 5,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-  },
-  {
-    id: 6,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-  },
-  {
-    id: 7,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-  },
-  {
-    id: 8,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-  },
-  {
-    id: 9,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-  },
-  {
-    id: 10,
-    title: "哈哈哈哈哈",
-    tagList: "vue、ts",
-    category: "前端学习",
-    createTime,
-    updateTime,
-    isTop: 0,
-    url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+    id: "3",
+    articleTitle: "第三篇文章",
+    articleCategory: ["001"],
+    articleTag: ["001", "002", "003"],
+    articleContent: "哈哈哈",
+    articleCover: [
+      {
+        name: "hamburger.png",
+        url: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+      }
+    ],
+    isTop: 1, // 置顶 1 置顶 0 不置顶
+    isPublic: 1, // 状态 1 公开 0 私密
+    type: 1, // 类型 1 原创 2 翻译 3 转载
+    createTime: createTime,
+    updateTime: updateTime
   }
 ];
 

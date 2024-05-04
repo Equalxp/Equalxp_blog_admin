@@ -28,6 +28,7 @@ const {
   onSizeChange,
   onCurrentChange,
   editArticle,
+  addArticle,
   deleteArticle,
   handleSelectionChange
 } = useColumns();
@@ -61,7 +62,7 @@ const {
       </el-form-item>
       <el-form-item label="文章分类：" prop="mobile">
         <el-select
-          v-model="param.category"
+          v-model="param.categoryId"
           placeholder="请选择文章分类"
           clearable
           class="!w-[160px]"
@@ -72,7 +73,7 @@ const {
       </el-form-item>
       <el-form-item label="文章标签：" prop="status">
         <el-select
-          v-model="param.tag"
+          v-model="param.tagId"
           placeholder="请选择文章标签"
           clearable
           class="!w-[160px]"
@@ -112,7 +113,11 @@ const {
       <el-button type="danger" size="small" :icon="useRenderIcon(Delete)"
         >批量删除</el-button
       >
-      <el-button type="primary" size="small" :icon="useRenderIcon(Add)"
+      <el-button
+        type="primary"
+        size="small"
+        :icon="useRenderIcon(Add)"
+        @click="addArticle"
         >新增</el-button
       >
     </el-space>
@@ -153,7 +158,7 @@ const {
         <el-image
           preview-teleported
           loading="lazy"
-          :src="row.url"
+          :src="row.articleCover[0].url"
           :preview-src-list="tableImageList.map(v => v)"
           :initial-index="index"
           fit="cover"

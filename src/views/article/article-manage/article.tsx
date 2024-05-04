@@ -2,12 +2,15 @@ import { tableData, tableImageList } from "./data";
 import { clone, delay } from "@pureadmin/utils";
 import { ref, onMounted, reactive } from "vue";
 import type { PaginationProps, LoadingConfig } from "@pureadmin/table";
+import { useRouter } from "vue-router";
 
 export function useColumns() {
+  const router = useRouter();
+
   const param = reactive({
     title: "",
-    tag: [],
-    category: "",
+    tagId: [],
+    categoryId: "",
     status: "",
     time: "",
     currennt: 1,
@@ -28,21 +31,21 @@ export function useColumns() {
     },
     {
       label: "文章标题",
-      prop: "title",
+      prop: "articleTitle",
       minWidth: 130
     },
     {
+      label: "分类",
+      prop: "articleCategory"
+    },
+    {
       label: "标签",
-      prop: "tagList",
+      prop: "articleTag",
       minWidth: 150
     },
     {
-      label: "分类",
-      prop: "category"
-    },
-    {
       label: "封面",
-      prop: "url",
+      prop: "articleCover",
       width: 200,
       slot: "image"
     },
@@ -56,6 +59,22 @@ export function useColumns() {
           inactive-value={0}
           onChange={() => onIsTopChange(row)}
         ></el-switch>
+      )
+    },
+    {
+      label: "状态",
+      prop: "isPublic",
+      minWidth: 80,
+      cellRenderer: ({ row }) => <span>{row.isPublic ? "公开" : "私密"}</span>
+    },
+    {
+      label: "类型",
+      prop: "type",
+      minWidth: 80,
+      cellRenderer: ({ row }) => (
+        <span>
+          {row.type === 1 ? "原创" : row.type === 2 ? "转载" : "私密"}
+        </span>
       )
     },
     {
@@ -133,8 +152,13 @@ export function useColumns() {
     });
   }
   function editArticle(row) {
-    console.log(row);
+    localStorage.setItem("article", JSON.stringify(row));
+    router.push({ path: "/article/editArticle", query: { articleId: row.id } });
   }
+  function addArticle() {
+    router.push({ path: "/article/addArticle" });
+  }
+
   function deleteArticle(row) {
     console.log(row);
   }
@@ -167,6 +191,7 @@ export function useColumns() {
     onSizeChange,
     onCurrentChange,
     editArticle,
+    addArticle,
     deleteArticle,
     handleSelectionChange
   };

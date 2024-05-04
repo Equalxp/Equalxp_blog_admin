@@ -37,6 +37,10 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
     },
     // 服务端渲染
     server: {
+      // 自動打開瀏覽器
+      open: true,
+      // 热更新
+      //hmr: false,
       // 是否开启 https
       https: false,
       // 端口号
