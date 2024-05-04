@@ -2,7 +2,7 @@ import type { IconifyIcon } from "@iconify/vue";
 
 export const routerArrays: Array<RouteConfigs> = [
   {
-    path: "/welcome",
+    path: "/home",
     parentPath: "/",
     meta: {
       title: "首页",

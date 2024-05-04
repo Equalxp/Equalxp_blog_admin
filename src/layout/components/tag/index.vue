@@ -282,7 +282,7 @@ function onClickDrop(key, item, selectRoute?: RouteConfigs) {
         startIndex: 1,
         length: multiTags.value.length
       });
-      router.push("/welcome");
+      router.push("/home");
       break;
     case 6:
       // 整体页面全屏
@@ -384,7 +384,7 @@ function showMenuModel(
       tagsViews[v].disabled = false;
     });
     tagsViews[3].disabled = true;
-  } else if (currentIndex === 0 || currentPath === "/redirect/welcome") {
+  } else if (currentIndex === 0 || currentPath === "/redirect/home") {
     // 当前路由为首页
     disabledMenus(true);
   } else {
@@ -394,7 +394,7 @@ function showMenuModel(
 
 function openMenu(tag, e) {
   closeMenu();
-  if (tag.path === "/welcome") {
+  if (tag.path === "/home") {
     // 右键菜单为首页，只显示刷新
     showMenus(false);
     tagsViews[0].show = true;
