@@ -1,61 +1,21 @@
-import { clone, delay } from "@pureadmin/utils";
-import { ref, onMounted, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import type { PaginationProps, LoadingConfig } from "@pureadmin/table";
 import { message } from "@/utils/message";
 
-import dayjs from "dayjs";
-
-const createTime = dayjs(new Date()).format("YYYY-MM-DD");
-const updateTime = dayjs(new Date()).format("YYYY-MM-DD");
-const tableData = [
-  {
-    id: 1,
-    tagName: "Vue",
-    createTime,
-    updateTime,
-    isDisabled: 1
-  },
-  {
-    id: 2,
-    tagName: "React",
-    createTime,
-    updateTime,
-    isDisabled: 0
-  },
-  {
-    id: 3,
-    tagName: "js",
-    createTime,
-    updateTime,
-    isDisabled: 0
-  },
-  {
-    id: 4,
-    tagName: "java",
-    createTime,
-    updateTime,
-    isDisabled: 1
-  },
-  {
-    id: 5,
-    tagName: "springboot",
-    createTime,
-    updateTime,
-    isDisabled: 0
-  }
-];
-
+import { getTagList, deleteTagList } from "@/api/tag";
+//addTag, editTag
 export function useColumns() {
   const param = reactive({
-    currennt: 1,
+    current: 1,
     size: 10,
-    tagName: "",
-    isDisabled: ""
+    tag_name: ""
   });
+  const primaryParam = reactive({ ...param });
   const dialogVisible = ref(false);
   const dataList = ref([]);
   const loading = ref(true);
   const tableSize = ref("small");
+  const selectList = ref([]);
   const columns: TableColumnList = [
     {
       type: "selection",
@@ -68,28 +28,16 @@ export function useColumns() {
     },
     {
       label: "标签",
-      prop: "tagName",
+      prop: "tag_name",
       minWidth: 130
     },
     {
       label: "创建日期",
-      prop: "createTime"
+      prop: "createdAt"
     },
     {
       label: "修改日期",
-      prop: "updateTime"
-    },
-    {
-      label: "是否禁用",
-      prop: "isTop",
-      cellRenderer: ({ row }) => (
-        <el-switch
-          v-model={row.isDisabled}
-          active-value={1}
-          inactive-value={0}
-          onChange={() => onIsDisabledChange(row)}
-        ></el-switch>
-      )
+      prop: "updatedAt"
     },
     {
       label: "操作",
@@ -100,10 +48,10 @@ export function useColumns() {
   ];
   const form = reactive({
     id: "",
-    tagName: ""
+    tag_name: ""
   });
   const rules = {
-    tagName: [{ required: true, message: "请输入标签名称", trigger: "blur" }]
+    tag_name: [{ required: true, message: "请输入标签名称", trigger: "blur" }]
   };
 
   /** 分页配置 */
@@ -119,7 +67,7 @@ export function useColumns() {
 
   /** 加载动画配置 */
   const loadingConfig = reactive<LoadingConfig>({
-    text: "正在加载第一页...",
+    text: "正在加载第1页...",
     viewBox: "-10, -10, 50, 50",
     spinner: `
         <path class="path" d="
@@ -135,32 +83,36 @@ export function useColumns() {
     // background: rgba()
   });
 
-  function onSearch() {}
+  function onSearch() {
+    getPageTagList();
+  }
+  const resetParam = () => {
+    Object.assign(param, primaryParam);
+    onSearch();
+  };
   const resetForm = formEl => {
     if (!formEl) return;
     formEl.resetFields();
-    onSearch();
   };
-  function onIsDisabledChange(val) {
-    console.log(val);
-  }
   function handleSelectionChange(val) {
-    console.log(val);
+    selectList.value = val;
   }
   function onChange(val) {
     pagination.small = val;
   }
 
   function onSizeChange(val) {
-    console.log("onSizeChange", val);
+    param.size = val;
+    getPageTagList();
   }
 
-  function onCurrentChange(val) {
-    loadingConfig.text = `正在加载第${val}页...`;
-    loading.value = true;
-    delay(600).then(() => {
-      loading.value = false;
-    });
+  async function onCurrentChange(val) {
+    if (typeof val == "number") {
+      loadingConfig.text = `正在加载第${val}页...`;
+      param.current = val;
+      loading.value = true;
+      getPageTagList();
+    }
   }
   function editTag(row) {
     dialogVisible.value = true;
@@ -168,8 +120,15 @@ export function useColumns() {
       Object.assign(form, row);
     }
   }
-  function deleteTag(row) {
-    console.log(row);
+  async function deleteTag(row) {
+    const res = await deleteTagList([row.id]);
+    console.log(res);
+
+    if (res.code == 0) {
+      message(`删除标签${row.tag_name}成功`, { type: "success" });
+    } else {
+      message(res.message, { type: "error" });
+    }
   }
   function closeDialog(formEl) {
     formEl.resetFields();
@@ -186,16 +145,20 @@ export function useColumns() {
     });
   }
 
-  onMounted(() => {
-    delay(600).then(() => {
-      const newList = [];
-      Array.from({ length: 6 }).forEach(() => {
-        newList.push(clone(tableData, true));
-      });
-      dataList.value = newList.flat(Infinity);
-      pagination.total = dataList.value.length;
+  async function getPageTagList() {
+    const res = await getTagList(param);
+    if (res.code == 0) {
+      dataList.value = res.result.list;
+      pagination.total = res.result.total;
       loading.value = false;
-    });
+    } else {
+      loading.value = false;
+      message("请求失败", { type: "error" });
+    }
+  }
+
+  onMounted(() => {
+    getPageTagList();
   });
 
   return {
@@ -212,12 +175,14 @@ export function useColumns() {
     closeDialog,
     submitForm,
     onSearch,
+    resetParam,
     resetForm,
     onChange,
     onSizeChange,
     onCurrentChange,
     editTag,
     deleteTag,
-    handleSelectionChange
+    handleSelectionChange,
+    getPageTagList
   };
 }

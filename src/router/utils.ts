@@ -18,7 +18,6 @@ import {
   storageSession,
   isIncludeAllChildren
 } from "@pureadmin/utils";
-import { getConfig } from "@/config";
 import { buildHierarchyTree } from "@/utils/tree";
 import { sessionKey, type DataInfo } from "@/utils/auth";
 import { usePermissionStoreHook } from "@/store/modules/permission";
@@ -27,7 +26,7 @@ const IFrame = () => import("@/layout/frameView.vue");
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
 // 动态路由
-import { getAsyncRoutes } from "@/api/routes";
+// import { getAsyncRoutes } from "@/api/routes";
 
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
@@ -73,7 +72,7 @@ function filterChildrenTree(data: RouteComponent[]) {
 }
 
 /** 判断两个数组彼此是否存在相同值 */
-function isOneOfArray(a: Array<string>, b: Array<string>) {
+function isOneOfArray(a: Array<string>, b: Array<number>) {
   return Array.isArray(a) && Array.isArray(b)
     ? intersection(a, b).length > 0
       ? true
@@ -84,9 +83,9 @@ function isOneOfArray(a: Array<string>, b: Array<string>) {
 /** 从sessionStorage里取出当前登陆用户的角色roles，过滤无权限的菜单 */
 function filterNoPermissionTree(data: RouteComponent[]) {
   const currentRoles =
-    storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
+    storageSession().getItem<DataInfo<number>>(sessionKey)?.role;
   const newTree = cloneDeep(data).filter((v: any) =>
-    isOneOfArray(v.meta?.roles, currentRoles)
+    isOneOfArray(v.meta?.roles, [currentRoles])
   );
   newTree.forEach(
     (v: any) => v.children && (v.children = filterNoPermissionTree(v.children))
@@ -149,76 +148,81 @@ function findRouteByPath(path: string, routes: RouteRecordRaw[]) {
   }
 }
 
-function addPathMatch() {
-  if (!router.hasRoute("pathMatch")) {
-    router.addRoute({
-      path: "/:pathMatch(.*)",
-      name: "pathMatch",
-      redirect: "/error/404"
-    });
-  }
-}
+// function addPathMatch() {
+//   if (!router.hasRoute("pathMatch")) {
+//     router.addRoute({
+//       path: "/:pathMatch(.*)",
+//       name: "pathMatch",
+//       redirect: "/error/404"
+//     });
+//   }
+// }
 
 /** 处理动态路由（后端返回的路由） */
-function handleAsyncRoutes(routeList) {
-  if (routeList.length === 0) {
-    usePermissionStoreHook().handleWholeMenus(routeList);
-  } else {
-    formatFlatteningRoutes(addAsyncRoutes(routeList)).map(
-      (v: RouteRecordRaw) => {
-        // 防止重复添加路由
-        if (
-          router.options.routes[0].children.findIndex(
-            value => value.path === v.path
-          ) !== -1
-        ) {
-          return;
-        } else {
-          // 切记将路由push到routes后还需要使用addRoute，这样路由才能正常跳转
-          router.options.routes[0].children.push(v);
-          // 最终路由进行升序
-          ascending(router.options.routes[0].children);
-          if (!router.hasRoute(v?.name)) router.addRoute(v);
-          const flattenRouters: any = router
-            .getRoutes()
-            .find(n => n.path === "/");
-          router.addRoute(flattenRouters);
-        }
-      }
-    );
-    usePermissionStoreHook().handleWholeMenus(routeList);
-  }
-  addPathMatch();
-}
+// function handleAsyncRoutes(routeList) {
+//   if (routeList.length === 0) {
+//     usePermissionStoreHook().handleWholeMenus(routeList);
+//   } else {
+//     formatFlatteningRoutes(addAsyncRoutes(routeList)).map(
+//       (v: RouteRecordRaw) => {
+//         // 防止重复添加路由
+//         if (
+//           router.options.routes[0].children.findIndex(
+//             value => value.path === v.path
+//           ) !== -1
+//         ) {
+//           return;
+//         } else {
+//           // 切记将路由push到routes后还需要使用addRoute，这样路由才能正常跳转
+//           router.options.routes[0].children.push(v);
+//           // 最终路由进行升序
+//           ascending(router.options.routes[0].children);
+//           if (!router.hasRoute(v?.name)) router.addRoute(v);
+//           const flattenRouters: any = router
+//             .getRoutes()
+//             .find(n => n.path === "/");
+//           router.addRoute(flattenRouters);
+//         }
+//       }
+//     );
+//     usePermissionStoreHook().handleWholeMenus(routeList);
+//   }
+//   addPathMatch();
+// }
 
 /** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
 function initRouter() {
-  if (getConfig()?.CachingAsyncRoutes) {
-    // 开启动态路由缓存本地sessionStorage
-    const key = "async-routes";
-    const asyncRouteList = storageSession().getItem(key) as any;
-    if (asyncRouteList && asyncRouteList?.length > 0) {
-      return new Promise(resolve => {
-        handleAsyncRoutes(asyncRouteList);
-        resolve(router);
-      });
-    } else {
-      return new Promise(resolve => {
-        getAsyncRoutes().then(({ data }) => {
-          handleAsyncRoutes(cloneDeep(data));
-          storageSession().setItem(key, data);
-          resolve(router);
-        });
-      });
-    }
-  } else {
-    return new Promise(resolve => {
-      getAsyncRoutes().then(({ data }) => {
-        handleAsyncRoutes(cloneDeep(data));
-        resolve(router);
-      });
-    });
-  }
+  return new Promise(resolve => {
+    // 初始化路由
+    usePermissionStoreHook().handleWholeMenus([]);
+    resolve(router);
+  });
+  // if (getConfig()?.CachingAsyncRoutes) {
+  //   // 开启动态路由缓存本地sessionStorage
+  //   const key = "async-routes";
+  //   const asyncRouteList = storageSession().getItem(key) as any;
+  //   if (asyncRouteList && asyncRouteList?.length > 0) {
+  //     return new Promise(resolve => {
+  //       handleAsyncRoutes(asyncRouteList);
+  //       resolve(router);
+  //     });
+  //   } else {
+  //     return new Promise(resolve => {
+  //       getAsyncRoutes().then(({ data }) => {
+  //         handleAsyncRoutes(cloneDeep(data));
+  //         storageSession().setItem(key, data);
+  //         resolve(router);
+  //       });
+  //     });
+  //   }
+  // } else {
+  //   return new Promise(resolve => {
+  //     getAsyncRoutes().then(({ data }) => {
+  //       handleAsyncRoutes(cloneDeep(data));
+  //       resolve(router);
+  //     });
+  //   });
+  // }
 }
 
 /**

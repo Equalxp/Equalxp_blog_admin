@@ -13,7 +13,6 @@ import {
 import {
   ascending,
   initRouter,
-  isOneOfArray,
   getHistoryMode,
   findRouteByPath,
   handleAliveRoute,
@@ -121,7 +120,7 @@ router.beforeEach((to: toRouteType, _from, next) => {
   }
   if (userInfo) {
     // 无权限跳转403页面
-    if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
+    if (to.meta?.role) {
       next({ path: "/error/403" });
     }
     if (_from?.name) {

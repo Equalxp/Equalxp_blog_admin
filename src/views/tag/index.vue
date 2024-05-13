@@ -9,7 +9,6 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Add from "@iconify-icons/ep/circle-plus";
 import Upload from "@iconify-icons/ep/upload";
 
-const formRef = ref();
 const TagFormRef = ref();
 
 const {
@@ -26,7 +25,7 @@ const {
   closeDialog,
   submitForm,
   onSearch,
-  resetForm,
+  resetParam,
   onSizeChange,
   onCurrentChange,
   editTag,
@@ -47,30 +46,14 @@ const {
         <el-radio-button label="small">小</el-radio-button>
       </el-radio-group>
     </el-space>
-    <el-form
-      ref="formRef"
-      :inline="true"
-      :model="param"
-      class="bg-bg_color w-[99/100]"
-    >
+    <el-form :inline="true" :model="param" class="bg-bg_color w-[99/100]">
       <el-form-item label="标签名称：" prop="username">
         <el-input
-          v-model="param.tagName"
+          v-model="param.tag_name"
           placeholder="请输入标签名称"
           clearable
           class="!w-[160px]"
         />
-      </el-form-item>
-      <el-form-item label="是否禁用：" prop="mobile">
-        <el-select
-          v-model="param.isDisabled"
-          placeholder="请选择是否禁用"
-          clearable
-          class="!w-[160px]"
-        >
-          <el-option label="是" value="1" />
-          <el-option label="否" value="0" />
-        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -81,7 +64,7 @@ const {
         >
           搜索
         </el-button>
-        <el-button :icon="useRenderIcon(Refresh)" @click="resetForm(formRef)">
+        <el-button :icon="useRenderIcon(Refresh)" @click="resetParam">
           重置
         </el-button>
       </el-form-item>
@@ -104,28 +87,13 @@ const {
       :loading="loading"
       :loading-config="loadingConfig"
       :height="tableSize === 'small' ? 352 : 440"
-      :data="
-        dataList.slice(
-          (pagination.currentPage - 1) * pagination.pageSize,
-          pagination.currentPage * pagination.pageSize
-        )
-      "
+      :data="dataList"
       :columns="columns"
       :pagination="pagination"
       @size-change="onSizeChange"
       @current-change="onCurrentChange"
       @selection-change="handleSelectionChange"
     >
-      <template #image="{ row, index }">
-        <el-image
-          preview-teleported
-          loading="lazy"
-          :src="row.url"
-          :initial-index="index"
-          fit="cover"
-          class="w-[160px] h-[80px]"
-        />
-      </template>
       <template #operation="{ row }">
         <el-button
           class="reset-margin"
@@ -146,20 +114,16 @@ const {
         >
           修改
         </el-button>
-        <el-popconfirm title="是否确认删除?">
-          <template #reference>
-            <el-button
-              class="reset-margin"
-              link
-              type="danger"
-              size="small"
-              @click="deleteTag(row)"
-              :icon="useRenderIcon(Delete)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-popconfirm>
+        <el-button
+          class="reset-margin"
+          link
+          type="danger"
+          size="small"
+          @click="deleteTag(row)"
+          :icon="useRenderIcon(Delete)"
+        >
+          删除
+        </el-button>
       </template>
     </pure-table>
     <el-dialog
@@ -177,7 +141,7 @@ const {
       >
         <el-form-item label="标签名称" prop="tagName">
           <el-input
-            v-model="form.tagName"
+            v-model="form.tag_name"
             :style="{ width: '380px' }"
             placeholder="请输入标签名称"
           />
